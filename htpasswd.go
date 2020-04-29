@@ -13,6 +13,7 @@ package htpasswd
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -106,29 +107,31 @@ func NewFromReader(r io.Reader, parsers []PasswdParser, bad BadLineHandler) (*Fi
 
 // Match checks the username and password combination to see if it represents
 // a valid account from the htpassword file.
-func (bf *File) Match(username, password string) bool {
+func (bf *File) Match(username, password string) (bool, error) {
 	bf.mutex.RLock()
 	matcher, ok := bf.passwds[username]
 	bf.mutex.RUnlock()
-
-	if ok && matcher.MatchesPassword(password) {
-		// we are good
-		return true
+	if !ok {
+		return false, errors.New("username not found")
 	}
 
-	return false
+	if matcher.MatchesPassword(password) {
+		// we are good
+		return true, nil
+	}
+	return false, nil
 }
 
 // RawEncoded :
-func (bf *File) RawEncoded(username string) (string, bool) {
+func (bf *File) RawEncoded(username string) (string, error) {
 	bf.mutex.RLock()
 	matcher, ok := bf.passwds[username]
 	bf.mutex.RUnlock()
 
 	if !ok {
-		return "", false
+		return "", errors.New("username not found")
 	}
-	return matcher.rawEncoded, true
+	return matcher.rawEncoded, nil
 }
 
 // Reload rereads the htpassword file..

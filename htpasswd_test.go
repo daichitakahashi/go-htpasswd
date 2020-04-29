@@ -1430,12 +1430,12 @@ func testSystemReader(t *testing.T, name string, contents string) {
 	}
 
 	for _, u := range testUsers {
-		if good := htp.Match(u.username, u.password); !good {
+		if good, _ := htp.Match(u.username, u.password); !good {
 			t.Errorf("%s user %s, password %s failed to authenticate: %t", name, u.username, u.password, good)
 		}
 
 		notPass := u.password + "not"
-		if bad := htp.Match(u.username, notPass); bad {
+		if bad, _ := htp.Match(u.username, notPass); bad {
 			t.Errorf("%s user %s, password %s erroneously authenticated: %t", name, u.username, notPass, bad)
 		}
 	}
@@ -1462,12 +1462,12 @@ func testSystem(t *testing.T, name string, contents string) {
 
 	for _, u := range testUsers {
 
-		if good := htp.Match(u.username, u.password); !good {
+		if good, _ := htp.Match(u.username, u.password); !good {
 			t.Errorf("%s user %s, password %s failed to authenticate: %t", name, u.username, u.password, good)
 		}
 
 		notPass := u.password + "not"
-		if bad := htp.Match(u.username, notPass); bad {
+		if bad, _ := htp.Match(u.username, notPass); bad {
 			t.Errorf("%s user %s, password %s erroneously authenticated: %t", name, u.username, notPass, bad)
 		}
 	}
